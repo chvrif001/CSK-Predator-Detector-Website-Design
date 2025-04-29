@@ -1,123 +1,86 @@
-<?php
+<?php 
 
-	include("classes/connect.php");
-	include("classes/signup.php");
+class Signup
+{
+	private $error = "";
 
-	$first_name = "";
-	$last_name = "";
-	$email = "";
+	public function evaluate($data)
+{
+    foreach ($data as $key => $value) {
 
-	if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        if (empty($value)) {
+            $this->error .= ucfirst($key) . " is empty! <br>";
+        }
 
-    	$signup = new Signup();
-    	$result = $signup->evaluate($_POST);
+        if ($key == "email" && !empty($value)) {
+            if (!preg_match("/^[\w\-\.]+@([\w-]+\.)+[\w-]{2,4}$/", $value)) {
+                $this->error .= "Invalid email format!<br>";
+            }
+        }
 
-    	if ($result != "") {
-    		echo "<div style='text-align: center; font-size:12px; color: white; background-color: grey;'>";
-    		echo "The following errors occurred<br><br>";
-        	echo $result;	
-        	echo "</div>";
-    	}
-    	else
-    	{
-    		header("Location: login.php");
-    		die;
-    	}
+        if ($key == "first_name" && !empty($value)) {
+            if (is_numeric($value)) {
+                $this->error .= "Invalid first name format!<br>";
+            }
+        }
 
-    	$first_name = $_POST['first_name'];
-		$last_name = $_POST['last_name'];
-		$email = $_POST['email'];
+        if ($key == "last_name" && !empty($value)) {
+            if (is_numeric($value)) {
+                $this->error .= "Invalid last name format!<br>";
+            }
+        }
+    }
+
+    // Passwords match check
+    if ($data['password1'] !== $data['password2']) {
+        $this->error .= "Passwords not identical!<br>";
+    }
+
+    // Final error handling
+    if ($this->error == "") {
+        $this->create_user($data);
+    } else {
+        return $this->error;
+    }
+}
+
+	
+
+
+
+
+	public function create_user($data)
+	{
+
+		$first_name = $data['first_name'];
+		$last_name = $data['last_name'];
+		$email = $data['email'];
+		$password = $data['password1'];
+
+		//create these
+		$url_address = strtolower($first_name) . "." . strtolower($last_name);
+		$userid = $this->create_userid();
+
+		$query = "INSERT INTO users 
+		(userid, first_name, last_name, email, password, url_address) 
+		VALUES 
+		('$userid', '$first_name', '$last_name', '$email', '$password', '$url_address')";
+
+		$DB = new Database();
+		$DB->save($query);
 	}
 
-?>
 
 
-
-<html> 
-
-
-	<head> 
-		<title>PredatorDetector | Sign up</title>
-	</head>
-
-	<style>
-		#bar{
-			height: 100px; 
-			background-color: green; 
-			color: white; 
-			padding: 4px;
+	private function create_userid()
+	{
+		$length = rand(4,19);
+		$number = "";
+		for ($i=0; $i< $length; $i++)
+		{
+			$new_rand = rand(0,9);
+			$number = $number . $new_rand;
 		}
-		
-		#signup_button{
-				background-color: black;
-				width: 70px;
-				text-align: centre;
-				padding: 4px;
-				border-radius: 4px;
-				float: right;
-		}
-		#bar2{
-			background-color: white; 
-			width: 800px; 
-			height: 400px; 
-			margin: auto; 
-			margin-top: 60px;
-			padding: 10px;
-			padding-top: 60px;
-			text-align: center;
-			font-weight: bold;
-
-		}
-
-		#text{
-			height:40px;
-			width: 300px;
-			border-radius: 4px;
-			padding: 4px;
-			font-size: 15px;
-		}
-
-		#button{
-			height: 30px;
-			width:200px;
-			background-color: green ;
-		}
-		
-	</style>
-
-	<body style="font-family: tahoma; background-color: #e9ebee;"> 
-		<div id="bar">
-			<div style = "font-size: 50px"> 
-				CSK Predator Detector 
-			</div>
-			
-			<div id="signup_button">
-				Login
-			</div>
-
-		</div>
-
-		<div id="bar2">
-
-			Sign up to CSK Predator Detector<br><br><br>
-
-			<form method="post" action="">
-				<input name = "first_name" type="text" id="text" placeholder =  "First Name"><br><br>
-
-				<input name = "last_name" type="text" id="text" placeholder =  "Last Name"><br><br>
-
-				<input name = "email"type="text" id="text" placeholder =  "Email"><br><br>
-				
-				<input name = "password1" type="password" id="text" placeholder = "Password"><br><br>
-
-				<input name = "password2" type="password" id="text" placeholder = "Retype Password"><br><br>
-
-				<input type="submit" id="button" value= "Sign up"><br><br>
-
-			</form>
-
-		</div>
-
-	</body>
-
-</html>
+		return $number;
+	}
+}
