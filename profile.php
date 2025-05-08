@@ -4,10 +4,6 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 date_default_timezone_set('Africa/Johannesburg'); // Set timezone to SAST
-
-// Directory where the images are stored
-$imageDir = "uploads/";
-$images = array_diff(scandir($imageDir), array('..', '.'));
 ?>
 
 <!DOCTYPE html>
@@ -46,24 +42,14 @@ $images = array_diff(scandir($imageDir), array('..', '.'));
         <?php endif; ?>
     </div>
 
-    <!-- Image Display -->
+    <!-- Action Buttons (No Images) -->
     <div style="width: 800px; margin: auto; margin-top: 20px;">
         <h2>Detected Images</h2>
-        <?php foreach ($images as $img): ?>
-            <?php
-            $filePath = $imageDir . $img;
-            $timestamp = filemtime($filePath);
-            $formattedTimestamp = date("Y-m-d H:i:s", $timestamp);
-            ?>
-            <div style="margin-bottom: 30px;">
-                <img src="/<?php echo htmlspecialchars($filePath); ?>" width="400">
-                <span style="font-size: 15px; color: gray;">Uploaded on: <?php echo $formattedTimestamp; ?></span><br><br>
-                <form method="post" action="action_response.php">
-                    <button name="action" value="safe">Not a Threat</button>
-                    <button name="action" value="deter">Deter</button>
-                </form>
-            </div>
-        <?php endforeach; ?>
+        <p>No uploaded images to display.</p>
+        <form method="post" action="action_response.php">
+            <button name="action" value="safe">Not a Threat</button>
+            <button name="action" value="deter">Deter</button>
+        </form>
     </div>
 
 </body>
