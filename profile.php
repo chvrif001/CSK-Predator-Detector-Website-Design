@@ -56,7 +56,7 @@ $images = array_diff(scandir($imageDir), array('..', '.'));
             $formattedTimestamp = date("Y-m-d H:i:s", $timestamp);
             ?>
             <div style="margin-bottom: 30px;">
-                <img src="<?php echo htmlspecialchars($filePath); ?>" width="400"><br>
+                <img src="/<?php echo htmlspecialchars($filePath); ?>" width="400">
                 <span style="font-size: 15px; color: gray;">Uploaded on: <?php echo $formattedTimestamp; ?></span><br><br>
                 <form method="post" action="action_response.php">
                     <button name="action" value="safe">Not a Threat</button>
