@@ -5,17 +5,20 @@ if (session_status() === PHP_SESSION_NONE) {
 
 date_default_timezone_set('Africa/Johannesburg');
 
-// Handle image upload from ESP32
-$uploaded_image_data = null;
+// Scan uploads folder for latest image
+$uploadsDir = 'uploads/';
+$latestImagePath = null;
+$allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['image'])) {
-    if ($_FILES['image']['error'] === UPLOAD_ERR_OK) {
-        $imageData = file_get_contents($_FILES['image']['tmp_name']);
-        $imageType = mime_content_type($_FILES['image']['tmp_name']);
-
-        // Convert to base64 to show without saving permanently
-        $base64 = 'data:' . $imageType . ';base64,' . base64_encode($imageData);
-        $uploaded_image_data = $base64;
+if (is_dir($uploadsDir)) {
+    $files = array_diff(scandir($uploadsDir, SCANDIR_SORT_DESCENDING), array('.', '..'));
+    foreach ($files as $file) {
+        $filePath = $uploadsDir . $file;
+        $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+        if (in_array($ext, $allowedExtensions)) {
+            $latestImagePath = $filePath;
+            break;
+        }
     }
 }
 ?>
@@ -56,17 +59,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['image'])) {
         <?php endif; ?>
     </div>
 
-    <!-- Action Buttons & Uploaded Image -->
+    <!-- Latest Uploaded Image and Response Buttons -->
     <div style="width: 800px; margin: auto; margin-top: 20px;">
         <h2>Detected Images</h2>
-        <?php if ($uploaded_image_data): ?>
-            <p>Motion detected. Image uploaded:</p>
-            <img src="<?php echo $uploaded_image_data; ?>" style="max-width: 100%; height: auto; border: 2px solid black;">
+        <?php if ($latestImagePath): ?>
+            <p>Most recent image detected:</p>
+            <img src="<?php echo htmlspecialchars($latestImagePath); ?>" style="max-width: 100%; height: auto; border: 2px solid black;">
         <?php else: ?>
             <p>No uploaded images to display.</p>
         <?php endif; ?>
 
-        <form method="post" action="action_response.php">
+        <form method="post" action="action_response.php" style="margin-top: 20px;">
             <button name="action" value="safe">Not a Threat</button>
             <button name="action" value="deter">Deter</button>
         </form>
@@ -74,6 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['image'])) {
 
 </body>
 </html>
+
 
 
 
