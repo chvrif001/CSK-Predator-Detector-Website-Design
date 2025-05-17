@@ -7,6 +7,7 @@ RUN a2enmod rewrite
 # Install required PHP extensions, including PostgreSQL
 RUN apt-get update && apt-get install -y \
     libcurl4-openssl-dev \
+    libpq-dev \
     zip \
     unzip \
     && docker-php-ext-install curl pgsql pdo_pgsql
