@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: predator-detector
+    env: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./Dockerfile
+    buildCommand: ""
+    startCommand: ""
