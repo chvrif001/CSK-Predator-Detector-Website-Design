@@ -3,7 +3,21 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-date_default_timezone_set('Africa/Johannesburg'); // Set timezone to SAST
+date_default_timezone_set('Africa/Johannesburg');
+
+// Handle image upload from ESP32
+$uploaded_image_data = null;
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['image'])) {
+    if ($_FILES['image']['error'] === UPLOAD_ERR_OK) {
+        $imageData = file_get_contents($_FILES['image']['tmp_name']);
+        $imageType = mime_content_type($_FILES['image']['tmp_name']);
+
+        // Convert to base64 to show without saving permanently
+        $base64 = 'data:' . $imageType . ';base64,' . base64_encode($imageData);
+        $uploaded_image_data = $base64;
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -42,10 +56,16 @@ date_default_timezone_set('Africa/Johannesburg'); // Set timezone to SAST
         <?php endif; ?>
     </div>
 
-    <!-- Action Buttons (No Images) -->
+    <!-- Action Buttons & Uploaded Image -->
     <div style="width: 800px; margin: auto; margin-top: 20px;">
         <h2>Detected Images</h2>
-        <p>No uploaded images to display.</p>
+        <?php if ($uploaded_image_data): ?>
+            <p>Motion detected. Image uploaded:</p>
+            <img src="<?php echo $uploaded_image_data; ?>" style="max-width: 100%; height: auto; border: 2px solid black;">
+        <?php else: ?>
+            <p>No uploaded images to display.</p>
+        <?php endif; ?>
+
         <form method="post" action="action_response.php">
             <button name="action" value="safe">Not a Threat</button>
             <button name="action" value="deter">Deter</button>
@@ -54,4 +74,7 @@ date_default_timezone_set('Africa/Johannesburg'); // Set timezone to SAST
 
 </body>
 </html>
+
+
+
 
