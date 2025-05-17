@@ -12,7 +12,7 @@ class Login
 		$email = addslashes($data['email']);
 		$password = addslashes($data['password']);
 
-		$query = "select * from cskpredatordetector_db where email = '$email' limit 1";
+		$query = "select * from users where email = '$email' limit 1";
 
 		$DB = new Database();
 		$result = $DB->read($query);
