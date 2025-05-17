@@ -4,12 +4,12 @@ FROM php:8.1-apache
 # Enable Apache rewrite module (optional)
 RUN a2enmod rewrite
 
-# Install required PHP extensions
+# Install required PHP extensions, including PostgreSQL
 RUN apt-get update && apt-get install -y \
     libcurl4-openssl-dev \
     zip \
     unzip \
-    && docker-php-ext-install curl mysqli
+    && docker-php-ext-install curl pgsql pdo_pgsql
 
 # Copy all project files to Apache root
 COPY . /var/www/html/
