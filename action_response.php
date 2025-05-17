@@ -5,13 +5,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $botToken = "8065240956:AAEJT7DigtGISpkjkjaKQYNYrGJkpGO07Jc";
     $chatId = "7595966011";
     $message = "";
+    $espCommand = "";
 
     if ($action === "safe") {
         $message = "🟢 Not a threat.";
+        $espCommand = "neglect";
     } elseif ($action === "deter") {
         $message = "⚠️ Honeybadger deterred.";
+        $espCommand = "deter";
     }
 
+    // Send message to Telegram
     if ($message) {
         $url = "https://api.telegram.org/bot$botToken/sendMessage";
         $data = [
@@ -27,7 +31,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]
         ];
         $context = stream_context_create($options);
-        $result = file_get_contents($url, false, $context);
+        file_get_contents($url, false, $context);
+    }
+
+    // Send command to ESP32
+    if ($espCommand) {
+        $espUrl = "http://172.20.10.5/$espCommand";
+        @file_get_contents($espUrl);  // Suppress warnings in case ESP32 is unreachable
     }
 
     // Redirect back to profile
