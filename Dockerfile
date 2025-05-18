@@ -18,5 +18,11 @@ COPY . /var/www/html/
 # Fix permissions
 RUN chown -R www-data:www-data /var/www/html
 
+# Create uploads directory and symlink for web access
+RUN mkdir -p /opt/render/project/uploads && \
+    ln -sf /opt/render/project/uploads /var/www/html/uploads
+
 EXPOSE 80
+
+# Start Apache
 CMD ["apache2-foreground"]
