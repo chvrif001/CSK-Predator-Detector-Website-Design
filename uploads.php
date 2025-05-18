@@ -1,6 +1,9 @@
 <?php
 // uploads.php - Modified to use persistent storage
 
+// This is just to see if anything is upload, to test uploads
+file_put_contents('/tmp/upload_hit.txt', "Uploads.php was hit\n", FILE_APPEND);
+
 // Set error reporting for debugging
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
