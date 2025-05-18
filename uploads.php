@@ -1,39 +1,49 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// uploads.php - Modified to use persistent storage
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    echo "POST received. ";
-   
-    // Debug: Print the contents of $_FILES
-    echo "Contents of \$_FILES: ";
-    print_r($_FILES);
-   
-    if (isset($_FILES['image'])) {
-        $targetDir = "uploads/";
-        // Check if directory exists and is writable
-        if (!file_exists($targetDir)) {
-            echo "Error: Directory does not exist.";
-            mkdir($targetDir, 0755, true);
-            echo " Created directory.";
-        }
-        if (!is_writable($targetDir)) {
-            echo "Error: Directory is not writable.";
-        }
-       
-        $targetFile = $targetDir . basename($_FILES["image"]["name"]);
-        echo "Target file: " . $targetFile . ". ";
-       
-        if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile)) {
-            echo "Upload successful.";
-        } else {
-            echo "Upload failed. Error: " . $_FILES["image"]["error"];
-        }
+// Set error reporting for debugging
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
+// Define the upload directory - use an environment variable to make it configurable
+$upload_dir = getenv('UPLOAD_DIRECTORY') ?: __DIR__ . '/uploads/';
+
+// Make sure the directory exists
+if (!file_exists($upload_dir)) {
+    mkdir($upload_dir, 0755, true);
+    echo "Created directory: " . $upload_dir . "\n";
+}
+
+// Check if we received a file
+if(isset($_FILES['image'])) {
+    $errors = array();
+    $file_name = $_FILES['image']['name'];
+    $file_size = $_FILES['image']['size'];
+    $file_tmp = $_FILES['image']['tmp_name'];
+    
+    // Generate a unique filename to prevent overwriting
+    $unique_filename = time() . '_' . $file_name;
+    $target_file = $upload_dir . $unique_filename;
+    
+    // Log some information for debugging
+    error_log("Receiving file: " . $file_name);
+    error_log("Temporary file: " . $file_tmp);
+    error_log("Target location: " . $target_file);
+    
+    // Move the uploaded file to our upload directory
+    if(move_uploaded_file($file_tmp, $target_file)) {
+        // Also store the filename in a database or file for tracking
+        $log_file = $upload_dir . 'uploads.log';
+        file_put_contents($log_file, $unique_filename . "\n", FILE_APPEND);
+        
+        echo "Upload successful";
+        error_log("File uploaded successfully: " . $target_file);
     } else {
-        echo "No image received in \$_FILES['image'].";
+        echo "Error uploading file";
+        error_log("Failed to move uploaded file from $file_tmp to $target_file");
     }
 } else {
-    echo "Invalid request method.";
+    echo "No image file received";
+    error_log("No file received in the request");
 }
 ?>
-
