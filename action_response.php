@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $message = "🟢 Not a threat.";
         $espCommand = "neglect";
     } elseif ($action === "deter") {
-        $message = "⚠️ Honeybadger deterred.";
+        $message = "⚠️ Honeybadger deterrent Activated.";
         $espCommand = "deter";
     }
 
