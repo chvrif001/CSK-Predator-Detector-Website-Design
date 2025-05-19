@@ -128,46 +128,45 @@ if (!empty($imageFiles)) {
         <?php endif; ?>
     </div>
     
-    <!-- Latest Uploaded Image and Response Buttons -->
-    <div style="width: 800px; margin: auto; margin-top: 20px;">
-        <h2>Detected Images</h2>
+   <!-- Latest Uploaded Image and Response Buttons -->
+<div style="width: 800px; margin: auto; margin-top: 20px;">
+    <h2>Detected Images</h2>
+    
+    <?php if ($latestImagePath): ?>
+        <p>Most recent image detected:</p>
+        <img src="get_image.php?file=<?php echo urlencode(basename($latestImagePath)); ?>" style="max-width: 100%; height: auto; border: 2px solid black;">
         
-        <?php if ($latestImagePath): ?>
-            <p>Most recent image detected:</p>
-            <img src="<?php echo htmlspecialchars($latestImagePath); ?>" style="max-width: 100%; height: auto; border: 2px solid black;">
-            
-            <form method="post" action="action_response.php" style="margin-top: 20px;">
-                <button name="action" value="safe">Not a Threat</button>
-                <button name="action" value="deter">Deter</button>
-            </form>
-            
-            <?php if (count($imageFiles) > 1): ?>
-                <h3>Previous Detections</h3>
-                <div class="image-gallery">
-                    <?php 
-                    // Skip the first image (already displayed as latest)
-                    $olderImages = array_slice($imageFiles, 1, 10); // Show up to 10 older images
-                    foreach ($olderImages as $image): 
-                        $imagePath = $uploadsDir . $image;
-                        // Extract timestamp from filename if available (assuming format like "1620145200_image.jpg")
-                        $timestamp = null;
-                        if (preg_match('/^(\d+)_/', $image, $matches)) {
-                            $timestamp = date('Y-m-d H:i:s', (int)$matches[1]);
-                        }
-                    ?>
-                        <div class="image-item">
-                            <img src="<?php echo htmlspecialchars($imagePath); ?>" alt="Detected image">
-                            <?php if ($timestamp): ?>
-                                <div class="image-timestamp">Detected: <?php echo $timestamp; ?></div>
-                            <?php endif; ?>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            <?php endif; ?>
-            
-        <?php else: ?>
-            <p>No uploaded images to display.</p>
+        <form method="post" action="action_response.php" style="margin-top: 20px;">
+            <button name="action" value="safe">Not a Threat</button>
+            <button name="action" value="deter">Deter</button>
+        </form>
+        
+        <?php if (count($imageFiles) > 1): ?>
+            <h3>Previous Detections</h3>
+            <div class="image-gallery">
+                <?php 
+                // Skip the first image (already displayed as latest)
+                $olderImages = array_slice($imageFiles, 1, 10); // Show up to 10 older images
+                foreach ($olderImages as $image): 
+                    // Extract timestamp from filename if available
+                    $timestamp = null;
+                    if (preg_match('/^(\d+)_/', $image, $matches)) {
+                        $timestamp = date('Y-m-d H:i:s', (int)$matches[1]);
+                    }
+                ?>
+                    <div class="image-item">
+                        <img src="get_image.php?file=<?php echo urlencode($image); ?>" alt="Detected image">
+                        <?php if ($timestamp): ?>
+                            <div class="image-timestamp">Detected: <?php echo $timestamp; ?></div>
+                        <?php endif; ?>
+                    </div>
+                <?php endforeach; ?>
+            </div>
         <?php endif; ?>
+        
+    <?php else: ?>
+        <p>No uploaded images to display.</p>
+    <?php endif; ?>
         
         <!-- Debug information (hidden by default) -->
         <p class="debug-toggle" onclick="document.getElementById('debug-info').style.display = document.getElementById('debug-info').style.display === 'none' ? 'block' : 'none'">
