@@ -42,7 +42,7 @@ function getUploadedImages($dir) {
 $imageFiles = [];
 if (file_exists($logFile)) {
     $logContents = file_get_contents($logFile);
-    $imageFiles = array_filter(explode("\n", $logContents));
+    $imageFiles = array_reverse(array_filter(explode("\n", $logContents)));
 } 
 
 // If no images found in log or log doesn't exist, scan the directory
