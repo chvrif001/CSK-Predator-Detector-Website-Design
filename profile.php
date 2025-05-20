@@ -9,7 +9,7 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 // Define the upload directory - use an environment variable to make it configurable
-$uploadsDir = /opt/render/project/uploads/;
+$uploadsDir = getenv('UPLOAD_DIRECTORY') ?: 'uploads/';
 $logFile = $uploadsDir . 'uploads.log';
 
 // Ensure the uploads directory has a trailing slash
