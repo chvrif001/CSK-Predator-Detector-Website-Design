@@ -9,7 +9,7 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 // Define the upload directory - use an environment variable to make it configurable
-$upload_dir = '/opt/render/project/uploads/';
+$upload_dir = "/data/uploads/";
 
 // Make sure the directory exists
 if (!file_exists($upload_dir)) {
