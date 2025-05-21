@@ -4,7 +4,7 @@
 ini_set('display_errors', 0); // Don't display errors to users
 
 // Define the upload directory - use the same path as uploads.php
-$upload_dir = '/opt/render/project/uploads/';
+$upload_dir = "/data/uploads/";
 
 // Check if file parameter exists
 if (isset($_GET['file'])) {
