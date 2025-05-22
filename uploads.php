@@ -25,3 +25,6 @@ if (isset($_FILES['image'])) {
 } else {
     echo "No file uploaded.";
 }
+
+
+/honeybadgercam-800a0-firebase-adminsdk-fbsvc-95a8e80fb7.json
