@@ -1,30 +1,27 @@
 <?php
 require __DIR__ . '/vendor/autoload.php';
 
-use Kreait\Firebase\Factory;
-use Kreait\Firebase\Storage;
+use Google\Cloud\Storage\StorageClient;
 
-$serviceAccountPath = __DIR__ . '/honeybadgercam-800a0-firebase-adminsdk-fbsvc-95a8e80fb7.json';
+// Set path to the Firebase service account key file
+putenv('GOOGLE_APPLICATION_CREDENTIALS=' . __DIR__ . '/honeybadgercam-800a0-firebase-adminsdk-fbsvc-95a8e80fb7.json');
 
-$factory = (new Factory)->withServiceAccount($serviceAccountPath);
-$storage = $factory->createStorage();
+// Set up Google Cloud Storage
+$storage = new StorageClient();
+$bucketName = 'honeybadgercam-800a0.appspot.com';  // ✅ Must end in .appspot.com
+$bucket = $storage->bucket($bucketName);
 
-// Get the uploaded file
-if (isset($_FILES['image'])) {
-    $file = $_FILES['image']['tmp_name'];
-    $name = basename($_FILES['image']['name']);
-
-    // Upload to Firebase Storage
-    $bucket = $storage->getBucket();
-    $bucket->upload(
-        fopen($file, 'r'),
-        ['name' => "uploads/{$name}"]
-    );
-
-    echo "File uploaded successfully!";
-} else {
-    echo "No file uploaded.";
+// Check if a file was uploaded
+if (!isset($_FILES['image']) || $_FILES['image']['error'] !== UPLOAD_ERR_OK) {
+    http_response_code(400);
+    echo "No file uploaded or there was an error.";
+    exit;
 }
 
+// Prepare file
+$tmpFilePath = $_FILES['image']['tmp_name'];
+$original
 
-/honeybadgercam-800a0-firebase-adminsdk-fbsvc-95a8e80fb7.json
+
+
+
