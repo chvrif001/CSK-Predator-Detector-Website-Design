@@ -3,7 +3,7 @@
 class Database
 {
 	private $host = "dpg-d0evn2c9c44c738hdq4g-a.oregon-postgres.render.com";
-	private $username = "cskpredatordetetor_db_user";
+	private $username = "cskpredatordetetor_db";
 	private $password = "zk90UPRI8WZHEC1TVdNFtNm0aPOX12aP";
 	private $db = "cskpredatordetetor_db";
 
