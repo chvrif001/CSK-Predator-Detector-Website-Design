@@ -4,7 +4,7 @@ require __DIR__ . '/vendor/autoload.php';
 use Kreait\Firebase\Factory;
 use Kreait\Firebase\Storage;
 
-$serviceAccountPath = __DIR__ . '/serviceAccountKey.json';
+$serviceAccountPath = __DIR__ . '/honeybadgercam-800a0-firebase-adminsdk-fbsvc-95a8e80fb7.json';
 
 $factory = (new Factory)->withServiceAccount($serviceAccountPath);
 $storage = $factory->createStorage();
