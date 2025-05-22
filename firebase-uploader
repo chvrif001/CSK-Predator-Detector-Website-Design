@@ -2,4 +2,4 @@ firebase-uploader/
 ├── uploads.php
 ├── composer.json
 ├── build.sh
-├── serviceAccountKey.json   ← your Firebase credentials
+├── honeybadgercam-800a0-firebase-adminsdk-fbsvc-95a8e80fb7.json  ← your Firebase credentials
