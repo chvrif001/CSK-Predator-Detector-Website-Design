@@ -134,7 +134,7 @@ if (!empty($imageFiles)) {
     
     <?php if ($latestImagePath): ?>
         <p>Most recent image detected:</p>
-        <img src="get_image.php?file=<?php echo urlencode(basename($latestImagePath)); ?>" style="max-width: 100%; height: auto; border: 2px solid black;">
+        <img src="get_image.php?file=<?php echo urlencode(basename($latestImagePath)); ?>" style="max-width: 70%; height: auto; border: 2px solid black;">
         
         <form method="post" action="action_response.php" style="margin-top: 20px;">
             <button name="action" value="safe">Not a Threat</button>
