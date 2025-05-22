@@ -1,0 +1,5 @@
+firebase-uploader/
+├── upload.php
+├── composer.json
+├── build.sh
+├── serviceAccountKey.json   ← your Firebase credentials
