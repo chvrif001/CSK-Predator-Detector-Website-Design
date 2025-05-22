@@ -1,52 +1,45 @@
 <?php
-// uploads.php - Modified to use persistent storage
+require __DIR__ . '/vendor/autoload.php';
 
-// This is just to see if anything is upload, to test uploads
-file_put_contents('/tmp/upload_hit.txt', "Uploads.php was hit\n", FILE_APPEND);
+use Kreait\Firebase\Factory;
+use Kreait\Firebase\Storage;
 
-// Set error reporting for debugging
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
+header('Content-Type: application/json');
 
-// Define the upload directory - use an environment variable to make it configurable
-$upload_dir = "/data/uploads/";
+// Load Firebase credentials
+$factory = (new Factory)->withServiceAccount(__DIR__.'/serviceAccountKey.json');
+$storage = $factory->createStorage();
 
-// Make sure the directory exists
-if (!file_exists($upload_dir)) {
-    mkdir($upload_dir, 0755, true);
-    echo "Created directory: " . $upload_dir . "\n";
+// Get image from POST body
+$imageData = file_get_contents("php://input");
+
+if (!$imageData) {
+    http_response_code(400);
+    echo json_encode(["status" => "fail", "message" => "No image data received"]);
+    exit;
 }
 
-// Check if we received a file
-if(isset($_FILES['image'])) {
-    $errors = array();
-    $file_name = $_FILES['image']['name'];
-    $file_size = $_FILES['image']['size'];
-    $file_tmp = $_FILES['image']['tmp_name'];
-    
-    // Generate a unique filename to prevent overwriting
-    $unique_filename = time() . '_' . $file_name;
-    $target_file = $upload_dir . $unique_filename;
-    
-    // Log some information for debugging
-    error_log("Receiving file: " . $file_name);
-    error_log("Temporary file: " . $file_tmp);
-    error_log("Target location: " . $target_file);
-    
-    // Move the uploaded file to our upload directory
-    if(move_uploaded_file($file_tmp, $target_file)) {
-        // Also store the filename in a database or file for tracking
-        $log_file = $upload_dir . 'uploads.log';
-        file_put_contents($log_file, $unique_filename . "\n", FILE_APPEND);
-        
-        echo "Upload successful";
-        error_log("File uploaded successfully: " . $target_file);
-    } else {
-        echo "Error uploading file";
-        error_log("Failed to move uploaded file from $file_tmp to $target_file");
-    }
-} else {
-    echo "No image file received";
-    error_log("No file received in the request");
-}
+// Generate unique filename
+$filename = 'uploads/cam_' . time() . '.jpg';
+
+// Save temporarily
+$tempPath = sys_get_temp_dir() . '/' . basename($filename);
+file_put_contents($tempPath, $imageData);
+
+// Upload to Firebase
+$bucket = $storage->getBucket();
+$object = $bucket->upload(fopen($tempPath, 'r'), [
+    'name' => $filename
+]);
+
+// Make it publicly accessible
+$object->update(['acl' => []], ['predefinedAcl' => 'PUBLICREAD']);
+$url = "https://storage.googleapis.com/" . $bucket->name() . "/" . $filename;
+
+// Delete temp file
+unlink($tempPath);
+
+// Return image URL
+echo json_encode(["status" => "success", "url" => $url]);
 ?>
+
