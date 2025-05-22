@@ -1,45 +1,48 @@
 <?php
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/vendor/autoload.php'; // Ensure Composer autoload is included
 
 use Kreait\Firebase\Factory;
+use Kreait\Firebase\Exception\FirebaseException;
 use Kreait\Firebase\Storage;
 
 header('Content-Type: application/json');
 
-// Load Firebase credentials
-$factory = (new Factory)->withServiceAccount(__DIR__.'/serviceAccountKey.json');
-$storage = $factory->createStorage();
+try {
+    // Initialize Firebase
+    $factory = (new Factory)
+        ->withServiceAccount(__DIR__ . '/honeybadgercam-800a0-firebase-adminsdk-fbsvc-5ffab772db.json')
+        ->withDefaultStorageBucket('honeybadgercam-800a0.appspot.com');
 
-// Get image from POST body
-$imageData = file_get_contents("php://input");
+    $storage = $factory->createStorage();
+    $bucket = $storage->getBucket();
 
-if (!$imageData) {
+    // Check file upload
+    if (!isset($_FILES['image']) || $_FILES['image']['error'] !== UPLOAD_ERR_OK) {
+        throw new Exception('No image uploaded or upload error');
+    }
+
+    $file = $_FILES['image'];
+    $tempFilePath = $file['tmp_name'];
+    $originalName = basename($file['name']);
+    $firebasePath = 'uploads/' . uniqid() . '_' . $originalName;
+
+    // Upload file
+    $uploadedFile = $bucket->upload(
+        fopen($tempFilePath, 'r'),
+        [
+            'name' => $firebasePath,
+            'predefinedAcl' => 'publicRead', // Make it publicly accessible
+        ]
+    );
+
+    $url = sprintf(
+        'https://firebasestorage.googleapis.com/v0/b/%s/o/%s?alt=media',
+        $bucket->name(),
+        rawurlencode($firebasePath)
+    );
+
+    echo json_encode(['success' => true, 'url' => $url]);
+} catch (Exception $e) {
     http_response_code(400);
-    echo json_encode(["status" => "fail", "message" => "No image data received"]);
-    exit;
+    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
 }
-
-// Generate unique filename
-$filename = 'uploads/cam_' . time() . '.jpg';
-
-// Save temporarily
-$tempPath = sys_get_temp_dir() . '/' . basename($filename);
-file_put_contents($tempPath, $imageData);
-
-// Upload to Firebase
-$bucket = $storage->getBucket();
-$object = $bucket->upload(fopen($tempPath, 'r'), [
-    'name' => $filename
-]);
-
-// Make it publicly accessible
-$object->update(['acl' => []], ['predefinedAcl' => 'PUBLICREAD']);
-$url = "https://storage.googleapis.com/" . $bucket->name() . "/" . $filename;
-
-// Delete temp file
-unlink($tempPath);
-
-// Return image URL
-echo json_encode(["status" => "success", "url" => $url]);
-?>
-
