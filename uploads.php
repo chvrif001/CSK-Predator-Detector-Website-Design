@@ -7,7 +7,7 @@ use Google\Cloud\Storage\StorageClient;
 putenv('GOOGLE_APPLICATION_CREDENTIALS=' . __DIR__ . '/honeybadgercam-800a0-firebase-adminsdk-fbsvc-95a8e80fb7.json');
 
 // Your Firebase Storage bucket name (must end in .appspot.com)
-$bucketName = 'honeybadgercam-800a0.appspot.com';
+$bucketName = 'honeybadgercam-800a0.firebasestorage.app';
 
 // Initialize the Storage client
 $storage = new StorageClient();
