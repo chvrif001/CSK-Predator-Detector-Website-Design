@@ -4,7 +4,7 @@ require __DIR__ . '/vendor/autoload.php';
 use Google\Cloud\Storage\StorageClient;
 
 // Set path to Firebase Admin SDK key
-putenv('GOOGLE_APPLICATION_CREDENTIALS=' . __DIR__ . '/honeybadgercam-800a0-firebase-adminsdk-fbsvc-95a8e80fb7.json');
+putenv('GOOGLE_APPLICATION_CREDENTIALS=' . __DIR__ . '/firebase-key.json');
 
 // Your Firebase Storage bucket name (must end in .appspot.com)
 $bucketName = 'honeybadgercam-800a0.firebasestorage.app';
