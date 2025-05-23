@@ -1,12 +1,11 @@
 <?php
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
-
     $botToken = "8065240956:AAEJT7DigtGISpkjkjaKQYNYrGJkpGO07Jc";
     $chatId = "7595966011";
     $message = "";
     $espCommand = "";
-
+    
     if ($action === "safe") {
         $message = "🟢 Not a threat.";
         $espCommand = "neglect";
@@ -14,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $message = "⚠️ Honeybadger deterrent Activated.";
         $espCommand = "deter";
     }
-
+    
     // Send message to Telegram
     if ($message) {
         $url = "https://api.telegram.org/bot$botToken/sendMessage";
@@ -22,7 +21,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'chat_id' => $chatId,
             'text' => $message
         ];
-
         $options = [
             "http" => [
                 "header" => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -33,19 +31,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $context = stream_context_create($options);
         file_get_contents($url, false, $context);
     }
-
+    
     // Send command to ESP32
     if ($espCommand) {
         $espUrl = "http://172.20.10.5/$espCommand";
         @file_get_contents($espUrl);  // Suppress warnings in case ESP32 is unreachable
+        
+        // Additional buzzer command for deter action
+        if ($action === "deter") {
+            $buzzerUrl = "http://172.20.10.5/buzzer";
+            @file_get_contents($buzzerUrl);  // Send buzzer command
+        }
     }
-
+    
     // Redirect back to profile
     header("Location: profile.php?status=" . $action . "_sent");
     exit;
 }
-
-
+?>
 
 
 
