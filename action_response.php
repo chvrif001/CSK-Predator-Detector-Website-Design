@@ -5,15 +5,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $chatId = "7595966011";
     $message = "";
     $espCommand = "";
-    
+
     if ($action === "safe") {
         $message = "/photo";
         $espCommand = "neglect";
     } elseif ($action === "deter") {
         $message = "⚠️ Honeybadger deterrent Activated.";
-        $espCommand = "deter";
+        $espCommand = "buzz_on";
     }
-    
+
+    // Save the command to a text file
+    if ($espCommand) {
+        file_put_contents("latest_command.txt", $espCommand);
+    }
+
     // Send message to Telegram
     if ($message) {
         $url = "https://api.telegram.org/bot$botToken/sendMessage";
@@ -31,20 +36,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $context = stream_context_create($options);
         file_get_contents($url, false, $context);
     }
-    
-    // Send command to ESP32
-    if ($espCommand) {
-        $espUrl = "http://172.20.10.5/$espCommand";
-        @file_get_contents($espUrl);  // Suppress warnings in case ESP32 is unreachable
-        
-        // Additional buzzer command for deter action
-        if ($action === "deter") {
-            $buzzerUrl = "http://172.20.10.5/buzzer";
-            @file_get_contents($buzzerUrl);  // Send buzzer command
-        }
-    }
-    
-    // Redirect back to profile
+
+    // Redirect back to profile or wherever
     header("Location: profile.php?status=" . $action . "_sent");
     exit;
 }
