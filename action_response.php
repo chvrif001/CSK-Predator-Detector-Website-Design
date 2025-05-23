@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $espCommand = "";
     
     if ($action === "safe") {
-        $message = "🟢 Not a threat.";
+        $message = "/photo";
         $espCommand = "neglect";
     } elseif ($action === "deter") {
         $message = "⚠️ Honeybadger deterrent Activated.";
