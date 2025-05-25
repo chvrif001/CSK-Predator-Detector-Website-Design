@@ -7,10 +7,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $espCommand = "";
 
     if ($action === "safe") {
-        $message = "/photo";
+        $message = "Not a threat"; // arlets the users that its not a threat
         $espCommand = "neglect";
     } elseif ($action === "deter") {
-        $message = "⚠️ Honeybadger deterrent Activated.";
+        $message = "⚠️ Honeybadger deterrent Activated."; //arlets the users that the buzzer has been activated
         $espCommand = "buzz_on";
     }
 
