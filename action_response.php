@@ -16,7 +16,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Save the command to a text file
     if ($espCommand) {
-        file_put_contents("latest_command.txt", $espCommand);
+        file_put_contents("/opt/render/project/uploads/commands/latest_command.json", json_encode([
+            'command' => $espCommand,
+            'timestamp' => time(),
+            'processed' => false
+    ]));
+
     }
 
     // Send message to Telegram
